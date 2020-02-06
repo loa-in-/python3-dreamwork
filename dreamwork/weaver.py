@@ -13,7 +13,9 @@ class Weaver:
 
         self.renderer_module = renderers.plain
         self.rendererinst = None
-        self.active_file = sys.stdout
+        self.active_file = 'stdout.txt'
+
+        self.buffers = defaultdict(list)
 
     def resolve_path(self, path):
         if self.__prefix:
@@ -27,6 +29,7 @@ class Weaver:
 
     def exit(self, document):
         #document.keystore_stack.remove(self)
+        self.flush_buffers()
         self.document = None
 
     def weave(self, document):
@@ -36,11 +39,13 @@ class Weaver:
             type = node.get('type')
             name = document.nodes_view(*node.get('name', '')).render()
             namespace = name.split(':',1)[0] if ':' in name else 'document'
+            shortname = name.split(':',1)[1] if ':' in name else name
 
             text = document.nodes_view(node).render()
 
-            if type == 'definition' and name.startswith('output:'):
-                self.configure(document, name, text, namespace)
+            if type == 'definition' and namespace == 'output':
+                self.configure(document, shortname, text, namespace)
+                print("setting",shortname,"to",text)
                 continue
 
             if type in ('text', 'definition', 'reference'):
@@ -67,17 +72,43 @@ class Weaver:
         return self.settings.get(name, value)
     
     def set_option(self, name, value):
+        print("setting option",name,"to",value)
         self.settings[name] = value
+        
+        if name == 'chapterfile':
+            print ("Changing files!!!")
+            self.flush_buffers()
+            self.active_file = value
+        
+        if name is 'renderer':
+            pass #TODO
+
+
+
 
 
     def write_to_active(self, text):
-        write = print
+        self.buffers[self.active_file].append(text)
 
-        if self.active_file is not None:
-            write = self.active_file.write
-
-        write(text)
+    def flush_buffers(self):
+        for filename in self.buffers:
+            path = self.resolve_path(filename)
         
+        text = "".join(self.buffers[filename])
+
+        print("-="*30)
+        print("Writing to file", path)
+        print(text)
+        print("-="*30)
+        print()
+
+        try:
+            os.makedirs(os.path.dirname(path))
+        except:
+            pass
+        
+        with open(path, 'w') as outfile:
+            outfile.write(str(text))
 
     def renderer(self, document):
         if self.rendererinst is None:

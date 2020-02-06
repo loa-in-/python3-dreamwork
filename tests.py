@@ -37,11 +37,14 @@ for filename in inputfiles:
         for piece in pieces:
             print("\t",piece)
 
-    t = tangler.Tangler('/dev/null')
+
+
+    t = tangler.Tangler('tests/outputs/'+os.path.splitext(filename)[0]+'/')
     t.tangle(doc)
 
-    w = weaver.Weaver('/dev/null')
+    w = weaver.Weaver('tests/outputs/'+os.path.splitext(filename)[0]+'/')
     w.weave(doc)
+    print(w.buffers.keys())
 
     for paragraph in doc.paragraphs:
         print(repr(paragraph))

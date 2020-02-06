@@ -31,7 +31,6 @@ nav:
 
 >->mkdocs nav section entries<-<
 - Configuring Apache and MySQL: webconfig.md
-                                >[name of the project]<
 <<<
 
 

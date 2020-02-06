@@ -21,11 +21,21 @@ class Tangler:
             self.write_assembly(file_text, filename)
 
     def write_assembly(self, text, filename):
+        path = self.resolve_path(filename)
+        
         print("-="*30)
-        print("Writing to file", self.resolve_path(filename))
+        print("Writing to file", path)
         print(text)
         print("-="*30)
         print()
+
+        try:
+            os.makedirs(os.path.dirname(path))
+        except:
+            pass
+        
+        with open(path, 'w') as outfile:
+            outfile.write(str(text))
             
                     
                 

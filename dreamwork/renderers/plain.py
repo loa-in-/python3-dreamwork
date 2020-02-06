@@ -32,7 +32,7 @@ class BaseRenderer:
         pass
 
     def finish(self):
-        pass
+        self.weaver.flush_buffers()
 
 PARAGRAPH_SEPARATOR = "\n\n"
 

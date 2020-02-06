@@ -113,12 +113,15 @@ class Document:
             mod_left, mod_right = modifiers = map(lambda m: bool(m.strip('-')), definition_piece.get('modifiers'))
             
             if not any(modifiers):
-                mod_right = True
+            #    mod_right = True
+                assembly.clear()
+                assembly.append(definition_piece)
             
             if mod_left:
                 assembly.appendleft(definition_piece)
             if mod_right:
                 assembly.append(definition_piece)
+            )
         
         return list(assembly)
 
