@@ -15,6 +15,8 @@ class Document:
         self.rawtext = []
         self.definitions = defaultdict(list)
 
+        self.view_stack = deque()
+
 
     def append_from_file(self, filename):
         nodes = self.__parser.parse_file(filename)
@@ -77,70 +79,44 @@ class Document:
         
         end_paragraph()
 
-    def resolve_reference_text(self, node, parent_indent=0):
+    def resolve_reference(self, node):
         name = node.get('name')
-        node['text'] = self.resolve_text_by_defname(name, parent_indent)
-        return node['text']
+        assert node.get('type') is 'reference'
         
-    def resolve_text_by_defname(self, name, parent_indent=0):
-        pieces = self.definitions[name]
+        kind = {
+            '{': 'freeform',
+            '[': 'indented'
+        }.get(node.get('kind'))
 
-        if not pieces:
-            raise NameError('Definition',name,'does not exist')
+        view = documentview.IndentationPreservingView(self) if kind is 'indented' \
+            else documentview.DeferredView(self)
+        view.extend(self.ordered_definitions(name))
+        return view
 
+    def defintion_view(self, definition_name):
+        return self.nodes_view(*document.definitions[definition_name])
+        
+    def nodes_view(self, *nodes):
+        view = documentview.DeferredView(self)
+        view.extend([self.resolve_reference(node) if node.get('type') == 'reference' else node for node in nodes])
+        return view
+
+    def ordered_definitions(self, name):
         assembly = deque()
-        for definition in pieces:
-            text_pieces = []
-            contents = definition.get('text')
-
-            if isinstance(contents, str):
-                text_pieces.append(contents)
-            else:
-                for subnode in contents:
-                    type = subnode.get('type')
-                    if type == 'reference':
-                        self.resolve_reference_text(subnode, parent_indent)
-                    text = subnode.get('text')
-                    text_pieces.append(text)
+        for definition_piece in self.definitions[name]:
             
-            kind = definition.get('kind')
-            token = (kind, text_pieces)
+            mod_left, mod_right = modifiers = map(lambda m: bool(m.strip('-')), definition_piece.get('modifiers'))
             
-            mod_left, mod_right = modifiers = map(lambda s: bool(s.strip('-')), definition.get('modifiers'))
             if not any(modifiers):
                 mod_right = True
             
             if mod_left:
-                assembly.appendleft(token)
+                assembly.appendleft(definition_piece)
             if mod_right:
-                assembly.append(token)
+                assembly.append(definition_piece)
+        
+        return list(assembly)
 
-        alltext = ""
-        for kind, pieces in assembly:
-            tokentext = "".join(pieces)
-            if kind is 'freeform':
-                alltext += tokentext
-            elif kind is 'tabular':
-                indent_spaces = len(alltext)
-                last_break = alltext.rfind('\n')
-                if last_break>=0:
-                    indent_spaces -= last_break
-                
-                indent_spaces += alltext.count('\t',-indent_spaces) * 4
-                indent_spaces += parent_indent
-
-                print("Detected", indent_spaces, "spaces")
-                indent = " "*indent_spaces
-                lines = tokentext.splitlines(True)
-                if lines[-1].endswith('\n'):
-                    lines.append(indent)
-                alltext += indent.join(lines)
-        
-        return alltext
-        
-        
-        
-        
 
 class ATreeVisitor(arpeggio.PTNodeVisitor):
     def __init__(self, parser, defaults=True, **kwargs):

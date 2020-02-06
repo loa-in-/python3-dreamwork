@@ -16,7 +16,7 @@ class Tangler:
         for definition_name in defined_files:
             filename = definition_name[definition_name.index(':')+1: ]
             
-            file_text = document.resolve_text_by_defname(definition_name)
+            file_text = document.nodes_view(*document.definitions[definition_name])
             
             self.write_assembly(file_text, filename)
 

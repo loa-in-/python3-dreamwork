@@ -29,9 +29,11 @@ nav:
 
 #### Extending definitions both ways
 
->->mkdocs nav section entries<+<
+>->mkdocs nav section entries<-<
 - Configuring Apache and MySQL: webconfig.md
+                                >[name of the project]<
 <<<
+
 
 ### References
 
