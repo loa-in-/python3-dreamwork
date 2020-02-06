@@ -121,7 +121,7 @@ class Document:
                 assembly.appendleft(definition_piece)
             if mod_right:
                 assembly.append(definition_piece)
-            )
+            
         
         return list(assembly)
 
