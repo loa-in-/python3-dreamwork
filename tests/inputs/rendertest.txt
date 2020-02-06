@@ -1,0 +1,79 @@
+>#> Render structural bits and definitions with markdown <#<
+>->output:renderer<-{markdown}<<<
+
+>->output:chapterfile<-{docs/about.md}<<<
+
+# Weave and Tangle
+
+## Introduction
+
+Welcome to the example code of a fictitious project called >{name of the project}<.
+
+### Definitions
+
+Short phrases, like the name of the project:
+
+>->name of the project<-{Whitespace Handling Test}<<<
+
+Whole definitions with arbitrary whitespace:
+
+>->mkdocs nav section entries<-<
+- About: about.md
+- Generating Python: python.md
+- Improving JavaScript: javascript.md
+<<<
+
+>->mkdocs nav section<-<
+nav:
+    >[mkdocs nav section entries]<
+<<<
+
+#### Extending definitions both ways
+
+>->mkdocs nav section entries<+<
+- Configuring Apache and MySQL: webconfig.md
+<<<
+
+### References
+
+The file this chapter will be written to is `>{output:chapterfile}<`.
+
+### Files
+
+>->file:mkdocs.yml<-<
+site_name: >{name of the project}<
+nav:
+    >[mkdocs nav section]<
+
+<<<
+
+## Pieceing it together
+
+How to configure mkdocs to use another theme? We won't use it but here,
+look for yourself:
+
+>->possible extension of actual file<-<
+>[file:mkdocs.yml]<
+theme: readthedocs
+<<<
+
+### Weaving
+
+Something about weaving
+
+### Tangling
+
+Something about tangling
+
+>->output:chapterfile<-{docs/python.md}<<<
+
+# Python code
+
+>->output:chapterfile<-{docs/javascript.md}<<<
+
+# JavaScript code
+
+>->output:chapterfile<-{docs/webconfig.md}<<<
+
+# Various config files
+

@@ -1,0 +1,47 @@
+>-> identifier <-{text one}<<<
+>-> identifier <-{ text two}<<<
+>-> identifier <-{
+<-{text three}<<<
+>-> identifier <-{
+<-{ text four}<<<
+>-> identifier <-{
+<-{ text five}
+<<<
+
+  jolly what a nice day
+
+>->those fancy config lines<-<
+[Space]
+gravity=0.0
+
+[Earth]
+gravity=>{ earth   gravity }<
+
+[Alien]
+gravity=>{alien planet gravity}<
+
+[Fancy]
+gravity=>{fancy planet gravity}<
+
+[Misc]
+>#> indented block follows <#<
+  >[misc settings]<
+
+<<<
+
+>->  earth gravity <-{
+<-{9.0m/s2}
+<<<
+
+>->  alien planet gravity <-{3.0m/s2}
+<<<
+
+>->  fancy planet gravity <-{20.0>{grav}<}<<<
+
+>-> asteroid field gravity <-{0.20}<<<
+>-> asteroid field gravity <-{>{grav}<}<<<
+
+>->grav<-{m/s2}<<<
+
+What a strong force, like >[fancy planet gravity]< strong!
+
