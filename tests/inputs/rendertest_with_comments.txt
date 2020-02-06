@@ -1,3 +1,4 @@
+>#> Render structural bits and definitions with markdown <#<
 >->output:renderer<-{markdown}<<<
 
 >->output:chapterfile<-{docs/about.md}<<<
@@ -41,7 +42,9 @@ The file this chapter will be written to is `>{output:chapterfile}<`.
 
 >->file:mkdocs.yml<-<
 site_name: >{name of the project}<
->[mkdocs nav section]<
+nav:
+    >[mkdocs nav section]<
+
 <<<
 
 ## Pieceing it together

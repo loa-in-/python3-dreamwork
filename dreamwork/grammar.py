@@ -12,13 +12,13 @@ __ = partial(_, multiline=True, re_flags=re.DOTALL+re.MULTILINE)
 
 
 
-def identifier(): return _(r'[\w\s]+')
+def identifier(): return _(r'[\w\s:\.]+')
 def ws(): return _(r'\s*')
 def anyws(): return __(r'[\s\r\n]*')
 
 
 
-def block_start(): return literal('>->'), identifier, literal('<'), [literal('+'), literal('-')]
+def block_start(): return __('>[+-]>'), identifier, __('<[-+]')
 
 def block_tabular():  return literal('<'), ws
 def block_interior(): return __('.+?(?=<<<)')
@@ -35,6 +35,11 @@ def ref_insert_middle(): return [(literal('['), identifier, literal(']')),
 def ref_insert_end(): return literal('<')
 
 
+def rem_insert_start(): return literal('>#>')
+def rem_insert_middle(): return __('.+?(?=<#<)')
+def rem_insert_end(): return literal('<#<')
+
+
 
 def block_statement(): return (block_start, [
         (block_freeform, block_freeform_interior, block_freeform_end),
@@ -43,9 +48,14 @@ def block_statement(): return (block_start, [
 
 def ref_statement(): return (ref_insert_start, ref_insert_middle, ref_insert_end) 
 
-def statement(): return [block_statement, ref_statement]
+def rem_statement(): return (rem_insert_start, rem_insert_middle, rem_insert_end) 
 
+def statement(): return [block_statement, ref_statement, rem_statement]
+
+def statements(): return (statement, ZeroOrMore(statement))
 
 def until_block_maybe(): return __(r'.*?(?=>)'), And(literal('>'))
 
-def freetext(): return until_block_maybe
+def until_eof(): return EOF
+
+def freetext(): return [until_block_maybe, until_eof]
