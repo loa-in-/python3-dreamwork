@@ -13,7 +13,11 @@ class Document:
         self.paragraphs = []
         self.chunks = []
         self.rawtext = []
+
         self.definitions = defaultdict(list)
+
+        #self.keystore_stack = deque() #for future use
+        #self.keystore_stack.append(self.definitions)
 
         self.view_stack = deque()
 
@@ -83,10 +87,7 @@ class Document:
         name = node.get('name')
         assert node.get('type') is 'reference'
         
-        kind = {
-            '{': 'freeform',
-            '[': 'indented'
-        }.get(node.get('kind'))
+        kind = node.get('kind')
 
         view = documentview.IndentationPreservingView(self) if kind is 'indented' \
             else documentview.DeferredView(self)
@@ -94,11 +95,15 @@ class Document:
         return view
 
     def defintion_view(self, definition_name):
-        return self.nodes_view(*document.definitions[definition_name])
+        return self.nodes_view(*self.definitions[definition_name])
+
+    def defintion_view_reordered(self, definition_name):
+        return self.nodes_view(*self.ordered_definitions(name))
+        
         
     def nodes_view(self, *nodes):
         view = documentview.DeferredView(self)
-        view.extend([self.resolve_reference(node) if node.get('type') == 'reference' else node for node in nodes])
+        view.extend([self.resolve_reference(node) if not isinstance(node, str) and node.get('type') == 'reference' else node for node in nodes])
         return view
 
     def ordered_definitions(self, name):
@@ -116,6 +121,9 @@ class Document:
                 assembly.append(definition_piece)
         
         return list(assembly)
+
+    def replace_definition(self, name, value):
+        self.definitions
 
 
 class ATreeVisitor(arpeggio.PTNodeVisitor):
@@ -139,6 +147,10 @@ class TreeVisitor(ATreeVisitor):
     def visit_ref_statement(self, node, children):
         props = dict(type="reference", length=node.position_end)
         props.update(children.ref_insert_middle[0])
+        props['kind'] = {
+            '{': 'freeform',
+            '[': 'indented'
+        }.get(props.get('kind'))
         return props
 
     def visit_rem_statement(self, node, children):

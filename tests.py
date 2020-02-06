@@ -4,7 +4,7 @@ from glob import glob
 
 from dreamwork import parser, testhelpers
 from dreamwork import document
-from dreamwork import tangler
+from dreamwork import tangler, weaver
 
 
 
@@ -39,3 +39,9 @@ for filename in inputfiles:
 
     t = tangler.Tangler('/dev/null')
     t.tangle(doc)
+
+    w = weaver.Weaver('/dev/null')
+    w.weave(doc)
+
+    for paragraph in doc.paragraphs:
+        print(repr(paragraph))
