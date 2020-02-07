@@ -67,7 +67,6 @@ class Document:
 
             for field_name, contents in zip(parsable_fields, parsable_fields_contents):
                 subnodes = self.__parser.wholetext_parse(contents)
-                print("\nFrom:\n\t",contents,"\ngot:\n\t", subnodes)
                 
                 if subnodes and subnodes[-1] is None:
                     subnodes = subnodes[:-1]

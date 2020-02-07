@@ -11,7 +11,7 @@ class Weaver:
 
         self.settings = dict()
 
-        self.renderer_module = renderers.plain
+        self.renderer_module = renderers.markdown
         self.rendererinst = None
         self.active_file = 'stdout.txt'
 
@@ -45,7 +45,6 @@ class Weaver:
 
             if type == 'definition' and namespace == 'output':
                 self.configure(document, shortname, text, namespace)
-                print("setting",shortname,"to",text)
                 continue
 
             if type in ('text', 'definition', 'reference'):
@@ -72,16 +71,19 @@ class Weaver:
         return self.settings.get(name, value)
     
     def set_option(self, name, value):
-        print("setting option",name,"to",value)
         self.settings[name] = value
         
         if name == 'chapterfile':
-            print ("Changing files!!!")
             self.flush_buffers()
             self.active_file = value
         
         if name is 'renderer':
-            pass #TODO
+            if getattr(renderers, value, None):
+                self.renderer_module = getattr(renderers, value)
+                self.rendererinst = None
+            else:
+                raise NameError("Failed loading renderer module", value)
+            
 
 
 

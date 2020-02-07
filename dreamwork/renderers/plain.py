@@ -1,45 +1,12 @@
 import textwrap
-
-class BaseRenderer:
-    def __init__(self, weaver, document):
-        super().__init__()
-        self.weaver = weaver
-        self.document = document
-
-        self.started = False
-
-    def weave_node(self, node, type, text):
-        if not self.started:
-            self.begin()
-            self.started = True
-
-        method = getattr(self, 'weave_'+type)
-        return method(node, text)
-
-    def weave_text(self, node, text):
-        pass
-
-    def weave_reference(self, node, text):
-        pass
-
-    def weave_definition(self, node, text):
-        pass
-
-    def write(self, text):
-        self.weaver.write_to_active(text)
-
-    def begin(self):
-        pass
-
-    def finish(self):
-        self.weaver.flush_buffers()
+from .. import rendererhelper
 
 PARAGRAPH_SEPARATOR = "\n\n"
 
-class Renderer(BaseRenderer):
+class PlainRenderer(rendererhelper.BaseRenderer):
     def __init__(self, weaver, document):
         super().__init__(weaver, document)
-        self.wrapper = textwrap.TextWrapper(80, '>   ')
+        self.wrapper = textwrap.TextWrapper(80)
         self.paragraphs = []
         self.paragraph = ""
 
@@ -100,3 +67,5 @@ class Renderer(BaseRenderer):
 
         self.write(("*" * 60).center(80)+"\n")
         self.start_paragraph()
+
+Renderer = PlainRenderer
